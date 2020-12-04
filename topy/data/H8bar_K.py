@@ -34,7 +34,7 @@ else:
     N1, N2, N3, N4 = symbols('N1 N2 N3 N4')
     N5, N6, N7, N8 = symbols('N5 N6 N7 N8')
     E, nu, g, G = symbols('E nu g G')
-    o = symbols('o') #  dummy symbol
+    o = symbols('o')  # dummy symbol
     xlist = [x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x]
     ylist = [y, y, y, y, y, y, y, y, y, y, y, y, y, y, y, y, y, y, y, y, y, y, y, y]
     zlist = [z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z]
@@ -53,18 +53,12 @@ else:
     N8 = (a - x) * (b + y) * (c + z) / (8 * a * b * c)
 
     # Create strain-displacement matrix B:
-    B0 = tuple(map(diff, [N1, 0, 0, N2, 0, 0, N3, 0, 0, N4, 0, 0,\
-                    N5, 0, 0, N6, 0, 0, N7, 0, 0, N8, 0, 0], xlist))
-    B1 = tuple(map(diff, [0, N1, 0, 0, N2, 0, 0, N3, 0, 0, N4, 0,\
-                    0, N5, 0, 0, N6, 0, 0, N7, 0, 0, N8, 0], ylist))
-    B2 = tuple(map(diff, [0, 0, N1, 0, 0, N2, 0, 0, N3, 0, 0, N4,\
-                    0, 0, N5, 0, 0, N6, 0, 0, N7, 0, 0, N8], zlist))
-    B3 = tuple(map(diff, [N1, N1, N1, N2, N2, N2, N3, N3, N3, N4, N4, N4,\
-                    N5, N5, N5, N6, N6, N6, N7, N7, N7, N8, N8, N8], yxlist))
-    B4 = tuple(map(diff, [N1, N1, N1, N2, N2, N2, N3, N3, N3, N4, N4, N4,\
-                    N5, N5, N5, N6, N6, N6, N7, N7, N7, N8, N8, N8], zylist))
-    B5 = tuple(map(diff, [N1, N1, N1, N2, N2, N2, N3, N3, N3, N4, N4, N4,\
-                    N5, N5, N5, N6, N6, N6, N7, N7, N7, N8, N8, N8], zxlist))
+    B0 = tuple(map(diff, [N1, 0, 0, N2, 0, 0, N3, 0, 0, N4, 0, 0, N5, 0, 0, N6, 0, 0, N7, 0, 0, N8, 0, 0], xlist))
+    B1 = tuple(map(diff, [0, N1, 0, 0, N2, 0, 0, N3, 0, 0, N4, 0, 0, N5, 0, 0, N6, 0, 0, N7, 0, 0, N8, 0], ylist))
+    B2 = tuple(map(diff, [0, 0, N1, 0, 0, N2, 0, 0, N3, 0, 0, N4, 0, 0, N5, 0, 0, N6, 0, 0, N7, 0, 0, N8], zlist))
+    B3 = tuple(map(diff, [N1, N1, N1, N2, N2, N2, N3, N3, N3, N4, N4, N4, N5, N5, N5, N6, N6, N6, N7, N7, N7, N8, N8, N8], yxlist))
+    B4 = tuple(map(diff, [N1, N1, N1, N2, N2, N2, N3, N3, N3, N4, N4, N4, N5, N5, N5, N6, N6, N6, N7, N7, N7, N8, N8, N8], zylist))
+    B5 = tuple(map(diff, [N1, N1, N1, N2, N2, N2, N3, N3, N3, N4, N4, N4, N5, N5, N5, N6, N6, N6, N7, N7, N7, N8, N8, N8], zxlist))
     B = Matrix([B0, B1, B2, B3, B4, B5])
 
     # Create constitutive (material property) matrix:
@@ -95,14 +89,14 @@ else:
 
     Bbar = Matrix([delCB0.tolist(), delCB1.tolist(), delCB2.tolist()])
 
-    dKbar = Bbar.T * Bbar #  a matrix of constants, i.e., no x, y or z vals
+    dKbar = Bbar.T * Bbar  # a matrix of constants, i.e., no x, y or z vals
 
     # Integration:
     logger.info('SymPy is integrating: K for H8bar...')
-    Kbar = dKbar.integrate((x, -a, a),(y, -b, b),(z, -c, c))
+    Kbar = dKbar.integrate((x, -a, a), (y, -b, b), (z, -c, c))
 
     # Convert SymPy Matrix to NumPy array:
-    K = array(Kbar.subs({a:_a, b:_b, c:_c, E:_E, nu:_nu, g:_g, G:_G})).astype('double')
+    K = array(Kbar.subs({a: _a, b: _b, c: _c, E: _E, nu: _nu, g: _g, G: _G})).astype('double')
 
     # Set small (<< 0) values equal to zero:
     K[abs(K) < 1e-6] = 0

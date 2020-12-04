@@ -63,10 +63,10 @@ else:
 
     # Integration:
     logger.info('SymPy is integrating: K for H8T...')
-    K = dK.integrate((x, -a, a),(y, -b, b),(z, -c, c))
+    K = dK.integrate((x, -a, a), (y, -b, b), (z, -c, c))
 
     # Convert SymPy Matrix to NumPy array:
-    K = array(K.subs({a:_a, b:_b, c:_c, k:_k})).astype('double')
+    K = array(K.subs({a: _a, b: _b, c: _c, k: _k})).astype('double')
 
     # Set small (<< 0) values equal to zero:
     K[abs(K) < 1e-6] = 0

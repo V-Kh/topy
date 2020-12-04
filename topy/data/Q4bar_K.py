@@ -67,14 +67,14 @@ else:
 
     Bbar = Matrix([delCB0.tolist(), delCB1.tolist()])
 
-    dKbar = Bbar.T * Bbar #  a matrix of constants, i.e., no x or y vals
+    dKbar = Bbar.T * Bbar  # a matrix of constants, i.e., no x or y vals
 
     # Integration:
     logger.info('SymPy is integrating: K for Q4bar...')
-    Kbar = dKbar.integrate((x, -a, a),(y, -b, b))
+    Kbar = dKbar.integrate((x, -a, a), (y, -b, b))
 
     # Convert SymPy Matrix to NumPy array:
-    K = array(Kbar.subs({a:_a, b:_b, E:_E, nu:_nu})).astype('double')
+    K = array(Kbar.subs({a: _a, b: _b, E: _E, nu: _nu})).astype('double')
 
     # Set small (<< 0) values equal to zero:
     K[abs(K) < 1e-6] = 0

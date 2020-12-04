@@ -58,10 +58,10 @@ else:
 
     # Integration:
     logger.info('SymPy is integrating: K for Q4...')
-    K = dK.integrate((x, -a, a),(y, -b, b))
+    K = dK.integrate((x, -a, a), (y, -b, b))
 
     # Convert SymPy Matrix to NumPy array:
-    K = array(K.subs({a:_a, b:_b, E:_E, nu:_nu})).astype('double')
+    K = array(K.subs({a: _a, b: _b, E: _E, nu: _nu})).astype('double')
 
     # Set small (<< 0) values equal to zero:
     K[abs(K) < 1e-6] = 0

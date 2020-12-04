@@ -1,4 +1,4 @@
-﻿"""
+"""
 # =============================================================================
 # Parse a ToPy problem definition (TPD) file to a Python dictionary.
 #
@@ -73,7 +73,7 @@ def config2dict(config):
         None.
 
     EXAMPLES:
-        >>> config2dict({'some_key': some_value})
+        >>> config2dict({'some_key': 'some_value'})
 
     """
 
@@ -93,19 +93,17 @@ def _parsev2007file(s):
 
     """
     snew = s.splitlines()[1:]
-    snew = [line.split('#')[0] for line in snew] # Get rid of all comments
+    snew = [line.split('#')[0] for line in snew]  # Get rid of all comments
     snew = [line.replace('\t', '') for line in snew]
     snew = [line.replace(' ', '') for line in snew]
     snew = list(filter(len, snew))
 
-    d = dict([line.split(':') for line in snew]) 
+    d = dict([line.split(':') for line in snew])
     return _parse_dict(d)
 
 
- 
-
 def _parse_dict(d):
-       # Read/convert minimum required input and convert, else exit:
+    # Read/convert minimum required input and convert, else exit:
     d = d.copy()
     try:
         d['PROB_TYPE'] = d['PROB_TYPE'].lower()
@@ -206,16 +204,14 @@ def _parse_dict(d):
     z = d.get('LOAD_VALU_Z_OUT', '')
     d['LOAD_VAL_OUT'] = _valvec(x, y, z)
 
-
     # The following entries are created and added to the dictionary,
     # they are not specified in the ToPy problem definition file:
-    Ksize = d['DOF_PN'] * (d['NUM_ELEM_X'] + 1) * (d['NUM_ELEM_Y'] + 1) * \
-    (d['NUM_ELEM_Z'] + 1) #  Memory allocation hint for PySparse
-    d['K'] = spmatrix.ll_mat_sym(Ksize, Ksize) #  Global stiffness matrix
-    d['E2SDOFMAPI'] =  _e2sdofmapinit(d['NUM_ELEM_X'], d['NUM_ELEM_Y'], \
-    d['DOF_PN']) #  Initial element to structure DOF mapping
+    Ksize = d['DOF_PN'] * (d['NUM_ELEM_X'] + 1) * (d['NUM_ELEM_Y'] + 1) * (d['NUM_ELEM_Z'] + 1)  # Memory allocation hint for PySparse
+    d['K'] = spmatrix.ll_mat_sym(Ksize, Ksize)  # Global stiffness matrix
+    d['E2SDOFMAPI'] = _e2sdofmapinit(d['NUM_ELEM_X'], d['NUM_ELEM_Y'], d['DOF_PN'])  # Initial element to structure DOF mapping
 
     return d
+
 
 def _tpd2vec(seq):
     """
@@ -250,6 +246,7 @@ def _tpd2vec(seq):
         finalvec = np.append(finalvec, vec)
     return finalvec
 
+
 def _dofvec(x, y, z, dofpn):
     """
     DOF vector.
@@ -278,6 +275,7 @@ def _dofvec(x, y, z, dofpn):
         dofz = (vec_z - 1) * dofpn + 2
     return np.r_[dofx, dofy, dofz].astype(int)
 
+
 def _valvec(x, y, z):
     """
     Values (e.g., of loads) vector.
@@ -303,12 +301,14 @@ def _valvec(x, y, z):
 
     return np.r_[vec_x, vec_y, vec_z]
 
+
 def _e2sdofmapinit(nelx, nely, dofpn):
     """
     Create the initial element to structure (e2s) DOF mapping (connectivity).
     Return a vector as a NumPy array.
 
     """
+    # FIXME what if bad value out of range, rename variables
     if dofpn == 1:
         e2s = np.r_[1, (nely + 2), (nely + 1), 0]
         e2s = np.r_[e2s, (e2s + (nelx + 1) * (nely + 1))]
@@ -322,11 +322,9 @@ def _e2sdofmapinit(nelx, nely, dofpn):
         c = np.arange(3 * (nely + 1), 3 * (nely + 1) + 3)
         b = np.arange(3 * (nely + 2), 3 * (nely + 2) + 3)
         h = np.arange(3 * (nelx + 1) * (nely + 1), 3 * (nelx + 1) * (nely + 1) + 3)
-        e = np.arange(3 * ((nelx+1) * (nely+1)+1), 3 * ((nelx+1) * (nely+1)+1) + 3)
-        g = np.arange(3 * ((nelx + 1) * (nely + 1) + (nely + 1)),\
-            3 * ((nelx + 1) * (nely + 1) + (nely + 1)) + 3)
-        f = np.arange(3 * ((nelx + 1) * (nely + 1) + (nely + 2)),\
-            3 * ((nelx + 1) * (nely + 1) + (nely + 2)) + 3)
+        e = np.arange(3 * ((nelx + 1) * (nely + 1) + 1), 3 * ((nelx + 1) * (nely + 1) + 1) + 3)
+        g = np.arange(3 * ((nelx + 1) * (nely + 1) + (nely + 1)), 3 * ((nelx + 1) * (nely + 1) + (nely + 1)) + 3)
+        f = np.arange(3 * ((nelx + 1) * (nely + 1) + (nely + 2)), 3 * ((nelx + 1) * (nely + 1) + (nely + 2)) + 3)
         e2s = np.r_[a, b, c, d, e, f, g, h]
     return e2s
 
@@ -345,10 +343,12 @@ def _checkparams(d):
     # Check for rigid body motion and warn user:
     if d['DOF_PN'] == 2:
         if 'FXTR_NODE_X' not in d or 'FXTR_NODE_Y' not in d:
-            logger.info('\n\tToPy warning: Rigid body motion in 2D is possible!\n')
+            logger.info(
+                '\n\tToPy warning: Rigid body motion in 2D is possible!\n')
     if d['DOF_PN'] == 3:
-        if not d.has_key('FXTR_NODE_X') or not d.has_key('FXTR_NODE_Y')\
-        or not d.has_key('FXTR_NODE_Z'):
-            logger.info('\n\tToPy warning: Rigid body motion in 3D is possible!\n')
+        if not d.has_key('FXTR_NODE_X') or not d.has_key('FXTR_NODE_Y') \
+                or not d.has_key('FXTR_NODE_Z'):
+            logger.info(
+                '\n\tToPy warning: Rigid body motion in 3D is possible!\n')
 
 # EOF parser.py

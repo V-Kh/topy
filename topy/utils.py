@@ -2,6 +2,7 @@
 import logging
 import sys
 
+
 def get_logger(name):
     # type: (str) -> logging.Logger
     """Return a `Logger` instance for `name`."""
